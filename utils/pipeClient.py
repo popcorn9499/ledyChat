@@ -1,7 +1,7 @@
 import asyncio
 import sys
 import time
-import win32pipe, win32file, pywintypes
+#import win32pipe, win32file, pywintypes
 import threading
 import struct
 import codecs
@@ -41,7 +41,7 @@ class pipeClient():
             while self.thread.is_alive():
                 await asyncio.sleep(0.01)
             print("YAYYY")
-        except pywintypes.error as e:
+        except:
             print("error...")
             pass
         self.pipeState = "clear"
@@ -69,5 +69,5 @@ class pipeReader(threading.Thread):
                 self.pipe.seek(0)        
                 resp = resp.decode('utf-16')
                 self.reader = resp
-            except pywintypes.error as e:
+            except:
                 print("[Pipe Reader] Ouch..  that did not work as intended...")
