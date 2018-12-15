@@ -97,7 +97,11 @@ class ledyBotChat:
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
 
     async def viewqueueLedyBot(self,message,command): #views the trade queue. it can accept whatever page u wanna view of the trade queue as well
-        await self.ledyPipeObj.pipeWriter("viewqueue")
+        splitMsg = splitMsg = message.Message.Contents.split(" ")
+        if len(splitMsg) == 2:
+            await self.ledyPipeObj.pipeWriter("viewqueue " + splitMsg[1])
+        else:
+            await self.ledyPipeObj.pipeWriter("viewqueue")
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
