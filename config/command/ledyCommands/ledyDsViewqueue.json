@@ -1,0 +1,7 @@
+{
+    "CommandType":"ledyDsViewqueue",
+    "Command": "!ledyViewqueue",
+    "CommandDetails": "",
+    "RolesAllowed": ["Owner","Mod"],
+    "HelpDetails": "Connects ledy bot"
+}
