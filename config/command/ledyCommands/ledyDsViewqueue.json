@@ -3,5 +3,5 @@
     "Command": "!ledyViewqueue",
     "CommandDetails": "",
     "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "Connects ledy bot"
+    "HelpDetails": "views the trade queue \r\n    !ledyViewqueue just views the first page \r\n    !ledyViewqueue {some integer}"
 }

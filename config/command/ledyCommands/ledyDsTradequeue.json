@@ -3,5 +3,5 @@
     "Command": "!ledyTradequeue",
     "CommandDetails": "",
     "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "Connects ledy bot"
+    "HelpDetails": "toggles trade queue on and off"
 }
