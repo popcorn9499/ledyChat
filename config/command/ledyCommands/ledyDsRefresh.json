@@ -3,5 +3,5 @@
     "Command": "!ledyRefresh",
     "CommandDetails": "",
     "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "Connects ledy bot"
+    "HelpDetails": "Refreshes the giveaways \r\n    !ledyRefresh {mode} \r\n    !ledyRefresh {mode} {filename} \r\n    mode can be either 'details' or 'bans' \r\n "
 }
