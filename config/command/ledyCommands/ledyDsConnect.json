@@ -3,5 +3,5 @@
     "Command": "!ledyConnect",
     "CommandDetails": "",
     "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "Connects ledy bot"
+    "HelpDetails": "Connects Ledybot to the 3ds"
 }

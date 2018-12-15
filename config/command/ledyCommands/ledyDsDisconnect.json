@@ -3,5 +3,5 @@
     "Command": "!ledyDisconnect",
     "CommandDetails": "",
     "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "Disconnect ledy bot"
+    "HelpDetails": "disconnects Ledybot from the 3ds"
 }
