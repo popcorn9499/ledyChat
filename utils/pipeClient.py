@@ -22,7 +22,7 @@ class pipeClient():
         while reader.reader == None:
             await asyncio.sleep(0.01)
         resp = reader.reader
-        while self.thread.is_alive():
+        while reader.is_alive():
             await asyncio.sleep(0.01)
         reader.join()
         self.pipeState = "clear"
