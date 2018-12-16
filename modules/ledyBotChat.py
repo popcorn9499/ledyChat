@@ -14,8 +14,8 @@ class ledyBotChat:
         self.l.logger.info("Starting")
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
-        self.ledyPipeObj = pipeClient.pipeClient(r"\\.\pipe\Demo") #loads the command pipe client
-        self.ledyPipeReaderObj = pipeClient.pipeClient(r"\\.\pipe\Demo1") #loads the reader pipe client
+        self.ledyPipeObj = pipeClient.pipeClient(r"\\.\pipe\LedyChat") #loads the command pipe client
+        self.ledyPipeReaderObj = pipeClient.pipeClient(r"\\.\pipe\LedyChatReader") #loads the reader pipe client
         loop.create_task(self.ledyReader())
         self.l.logger.info("Started")
 
