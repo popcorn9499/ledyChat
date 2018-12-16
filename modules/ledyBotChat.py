@@ -4,7 +4,8 @@ import asyncio
 import time
 import datetime
 from utils import logger
-
+from utils import fileIO
+import os
 from utils import pipeClient
 
 
@@ -12,12 +13,36 @@ class ledyBotChat:
     def __init__(self):
         self.l = logger.logs("ledyBotChat") #creates the logger 
         self.l.logger.info("Starting")
+        #checks for the files to exist
+        self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
+        self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
+
+
+        self.checkFolder()
+        self.checkPipeFile()
+
+        
+        self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
-        self.ledyPipeObj = pipeClient.pipeClient(r"\\.\pipe\LedyChat") #loads the command pipe client
-        self.ledyPipeReaderObj = pipeClient.pipeClient(r"\\.\pipe\LedyChatReader") #loads the reader pipe client
+        self.ledyPipeObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the command pipe client
+        self.ledyPipeReaderObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the reader pipe client
         loop.create_task(self.ledyReader())
         self.l.logger.info("Started")
+
+    def checkFolder(self):
+        if os.path.isdir(self.ledyDir) == False:
+            self.l.logger.info("LedyChat Folder Does Not Exist")
+            self.l.logger.info("Creating...")
+            os.makedirs(self.ledyDir)
+
+    def checkPipeFile(self):
+        if (os.path.isfile(self.ledyPipeNameFile) == False):
+            self.l.logger.info("PipeNames.json File Does Not Exist")
+            self.l.logger.info("Creating...")
+            pipeNames = [r"\\.\pipe\LedyChat",r"\\.\pipe\LedyChatReader"]
+            fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
+
 
     async def ledyReader(self): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         while True:
