@@ -38,7 +38,7 @@ class ledyBotChat:
 
     def checkPipeFile(self):
         if (os.path.isfile(self.ledyPipeNameFile) == False):
-            self.l.logger.info("PipeNames.json File Does Not Exist")
+            self.l.logger.info("pipeNames.json File Does Not Exist")
             self.l.logger.info("Creating...")
             pipeNames = [r"\\.\pipe\LedyChat",r"\\.\pipe\LedyChatReader"]
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
