@@ -16,10 +16,11 @@ class ledyBotChat:
         #checks for the files to exist
         self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
         self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
-
+        self.msgChannels = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
 
         self.checkFolder()
         self.checkPipeFile()
+        fileIO.checkFile("config-example{0}LedyChat{0}MsgChannel.json".format(os.sep),"config{0}LedyChat{0}MsgChannel.json".format(os.sep),"MsgChannel.json",self.l)
 
         
         self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
@@ -49,8 +50,12 @@ class ledyBotChat:
             commandOutput = await self.ledyPipeReaderObj.pipeReader()
             commandOutput = await self.messageFix(commandOutput)
             print("reader...")
-
             self.l.logger.info("[but] {0}".format(commandOutput))
+            for key,val in self.msgChannels.items():#chat output to wherever
+                botRoles= {"":0} 
+                await self.processMsg(message=commandOutput,username="LedyChat",channel=["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
+           
+
 
     async def messageFix(self,message): #fixes the first two characters missing from the pipe
         if message.split(":")[0] == "g": #msg fix
