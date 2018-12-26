@@ -5,9 +5,9 @@ from sites import discord
 from sites import youtube
 from sites import irc
 from utils import logger
-from utils import deleteMsg
+#from utils import deleteMsg
 from modules import chatbot
-from modules import chatLog
+#from modules import chatLog
 from modules import command
 from modules import ledyBotChat
 
@@ -15,6 +15,9 @@ async def messageTest(Message):
     print(Message.Contents)
 
 
+
+
+#talk to ezpz about start command
 
 
 #events.onMessage += messageTest
@@ -26,7 +29,7 @@ async def messageTest(Message):
 
 chatbot = chatbot.chatbot()
 
-chatLog = chatLog.chatLog()
+#chatLog = chatLog.chatLog()
 
 
 
