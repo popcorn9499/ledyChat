@@ -53,7 +53,7 @@ class ledyBotChat:
             self.l.logger.info("[but] {0}".format(commandOutput))
             for key,val in self.msgChannels.items():#chat output to wherever
                 botRoles= {"":0} 
-                await self.processMsg(message=commandOutput,username="LedyChat",channel=["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
+                await self.processMsg(message=commandOutput,username="LedyChat",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
            
 
 
