@@ -53,8 +53,23 @@ class ledyBotChat:
             print("reader...")
             self.l.logger.info("[but] {0}".format(commandOutput))
             for key,val in self.msgChannels.items():#chat output to wherever
-                botRoles= {"":0} 
-                await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
+                botRoles= {"":0}
+                if commandOutput.split(" ")[0] == "msg:trade":
+                    msg = commandOutput
+                    x = msg.replace("msg:trade", " ")[2:]
+                    x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
+                    x = x.split("|")
+                    trainer = x[0]
+                    name = x[1]
+                    country = x[2]
+                    subReddit = x[3]
+                    pokemon = x[4]
+                    fc = x[5]
+                    page = x[6]
+                    index = x[7]
+                    formatOpts = {"%ledyTrainerName%":trainer,"%ledyNickname%":name,"%ledyCountry%":country,"%ledySubReddit%":subReddit,"%ledyPokemon%":pokemon,"%ledyFC%":fc,"%ledyPage%":page,"%ledyIndex%":index}
+                    await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts,formattingSettings=val["TradeFormatting"],formatType="Other")
+            await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts)       
            
 
 
@@ -141,12 +156,17 @@ class ledyBotChat:
         
 
 
-    async def processMsg(self,username,message,roleList,server,channel,service):
+    async def processMsg(self,username,message,roleList,server,channel,service,formatOpts="",formattingSettings=None,formatType=None):
         print("ya... {0}".format(message))
         formatOptions = {"%authorName%": username, "%channelFrom%": channel, "%serverFrom%": server, "%serviceFrom%": service,"%message%":"message","%roles%":roleList}
+        formatOptions.update(formatOpts)
         message = Object.ObjectLayout.message(Author=username,Contents=message,Server=server,Channel=channel,Service=service,Roles=roleList)
         objDeliveryDetails = Object.ObjectLayout.DeliveryDetails(Module="Command",ModuleTo="Site",Service=service,Server=server,Channel=channel)
-        objSendMsg = Object.ObjectLayout.sendMsgDeliveryDetails(Message=message, DeliveryDetails=objDeliveryDetails, FormattingOptions=formatOptions,messageUnchanged="None")
+        if (formattingSettings==None or fomatType==None):
+            objSendMsg = Object.ObjectLayout.sendMsgDeliveryDetails(Message=message, DeliveryDetails=objDeliveryDetails, FormattingOptions=formatOptions,messageUnchanged="None")
+        else:
+            objSendMsg = Object.ObjectLayout.sendMsgDeliveryDetails(Message=message, DeliveryDetails=objDeliveryDetails, FormattingOptions=formatOptions,formattingSettings=formattingSettings,formatType=formatType,messageUnchanged="None")
+
         config.events.onMessageSend(sndMessage=objSendMsg)     
 
 
