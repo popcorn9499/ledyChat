@@ -13,14 +13,15 @@ class ledyBotChat:
     def __init__(self):
         self.l = logger.logs("ledyBotChat") #creates the logger 
         self.l.logger.info("Starting")
+        self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
+        self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
+        self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
+
         #checks for the files to exist
         self.checkFolder()
         self.checkPipeFile()
         fileIO.checkFile("config-example{0}LedyChat{0}MsgChannel.json".format(os.sep),"config{0}LedyChat{0}MsgChannel.json".format(os.sep),"MsgChannel.json",self.l)
 
-        self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
-        self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
-        self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
         self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
         loop = asyncio.get_event_loop()
