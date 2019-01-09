@@ -160,7 +160,7 @@ class ledyBotChat:
         formatOptions.update(formatOpts)
         message = Object.ObjectLayout.message(Author=username,Contents=message,Server=server,Channel=channel,Service=service,Roles=roleList)
         objDeliveryDetails = Object.ObjectLayout.DeliveryDetails(Module="Command",ModuleTo="Site",Service=service,Server=server,Channel=channel)
-        if (formattingSettings==None or fomatType==None):
+        if (formattingSettings==None or formatType==None):
             objSendMsg = Object.ObjectLayout.sendMsgDeliveryDetails(Message=message, DeliveryDetails=objDeliveryDetails, FormattingOptions=formatOptions,messageUnchanged="None")
         else:
             objSendMsg = Object.ObjectLayout.sendMsgDeliveryDetails(Message=message, DeliveryDetails=objDeliveryDetails, FormattingOptions=formatOptions,formattingSettings=formattingSettings,formatType=formatType,messageUnchanged="None")
