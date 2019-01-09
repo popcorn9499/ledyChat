@@ -30,9 +30,13 @@ class pipeClient():
 
     async def pipeWriter(self,data):
         print("blah")
+        pipeFailCount = 0
         while self.pipeState != "clear":
             await asyncio.sleep(0.01)
-            print("waiting")
+            pipeFailCount++
+            if (pipeFailCount==200):
+                print("waiting")
+                pipeFailCount=0
         self.pipeState = "inUse"
         print("Active Threads: {0}".format(threading.active_count()))
         try:
@@ -70,4 +74,5 @@ class pipeReader(threading.Thread):
                 resp = resp.decode('utf-16')
                 self.reader = resp
             except:
-                print("[Pipe Reader] Ouch..  that did not work as intended...")
+                time.sleep(15)
+                print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
