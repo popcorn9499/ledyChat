@@ -101,6 +101,11 @@ class ledyBotChat:
 
     async def startLedyBot(self,message,command): #sends the start command to start the bot
         await self.ledyPipeObj.pipeWriter("startgtsbot")
+        commandOutput = await self.getMessage("command")
+        botRoles= {"":0}
+        await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
+
+
 
     async def stopLedyBot(self,message,command): #sends the stop command to stop the bot
         await self.ledyPipeObj.pipeWriter("stopgtsbot")
