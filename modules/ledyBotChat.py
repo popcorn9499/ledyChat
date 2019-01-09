@@ -56,7 +56,7 @@ class ledyBotChat:
                 if commandOutput.split(" ")[0] == "msg:trade":
                     msg = commandOutput
                     x = msg.replace("msg:trade", " ")[2:]
-                    x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
+                    #x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
                     x = x.split("|")
                     trainer = x[0]
                     name = x[1]
