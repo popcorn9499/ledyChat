@@ -33,7 +33,7 @@ class pipeClient():
         pipeFailCount = 0
         while self.pipeState != "clear":
             await asyncio.sleep(0.01)
-            pipeFailCount++
+            pipeFailCount +=1
             if (pipeFailCount==200):
                 print("waiting")
                 pipeFailCount=0
