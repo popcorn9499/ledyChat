@@ -32,6 +32,7 @@ class ledyBotChat:
         self.ledyPipeObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the command pipe client
         self.ledyPipeReaderObj = pipeClient.pipeClient(self.pipeNames[1]) #loads the reader pipe client
         loop.create_task(self.ledyReader())
+        #loop.create_task(self.tradequeueOnOff(self.tradequeueEnable))
         self.l.logger.info("Started")
 
     def checkFolder(self):
@@ -48,12 +49,15 @@ class ledyBotChat:
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
 
 
-    async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads up
-        await self.ledyPipeObj.pipeWriter("togglequeue")
-        enabled = None
-        while (enabled != tradequeueEnable):
+    async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads 
+        enabled = False
+        while (enabled != True):
+            await self.ledyPipeObj.pipeWriter("togglequeue")
             commandOutput = await self.getMessage("command")
-            enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
+            if (tradequeueEnable == True):
+                enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
+            else:
+                enabled=commandOutput=="command:togglequeue Trade Queue Disabled."
             await asyncio.sleep(2)
 
 
@@ -116,7 +120,7 @@ class ledyBotChat:
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
-
+        await self.tradequeueOnOff(self.tradequeueEnable)
 
 
     async def stopLedyBot(self,message,command): #sends the stop command to stop the bot
