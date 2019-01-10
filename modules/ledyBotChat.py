@@ -16,12 +16,15 @@ class ledyBotChat:
         self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
         self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
         self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
-
+        self.generalFileName="{0}{1}general.json".format(self.ledyDir,os.sep)
         #checks for the files to exist
         self.checkFolder()
         self.checkPipeFile()
         fileIO.checkFile("config-example{0}LedyChat{0}MsgChannel.json".format(os.sep),"config{0}LedyChat{0}MsgChannel.json".format(os.sep),"MsgChannel.json",self.l)
 
+        fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
+        
+        self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
         self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
         loop = asyncio.get_event_loop()
@@ -43,6 +46,15 @@ class ledyBotChat:
             self.l.logger.info("Creating...")
             pipeNames = [r"\\.\pipe\LedyChat",r"\\.\pipe\LedyChatReader"]
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
+
+
+    async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads up
+        await self.ledyPipeObj.pipeWriter("togglequeue")
+        enabled = None
+        while (enabled != tradequeueEnable):
+            commandOutput = await self.getMessage("command")
+            enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
+            await asyncio.sleep(2)
 
 
     async def ledyReader(self): #reads all messages that come in. hopefully it gets broadcasted to both pipes
