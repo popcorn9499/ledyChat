@@ -21,14 +21,20 @@ class pipeClient():
             await asyncio.sleep(0.01)
         self.pipeState = "inUse"
         print("Starting read")
-        reader = pipeReader(self.pipe)
-        reader.start()
-        while reader.reader == None:
-            await asyncio.sleep(0.01)
-        resp = reader.reader
-        while reader.is_alive():
-            await asyncio.sleep(0.01)
-        reader.join()
+        pipeReadComplete=False #stays false until the read is complete in case the pipe broke mid read or something
+        while !pipeReadComplete: #retrys the read until its completed successful
+            reader = pipeReader(self.pipe) 
+            reader.start()
+            while reader.reader == None:
+                await asyncio.sleep(0.01)
+            resp = reader.reader
+            while reader.is_alive():
+                await asyncio.sleep(0.01)
+            reader.join()
+            if resp == "PipeFailedTryAgain":
+                print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+            else:
+                pipeReadComplete=True
         self.pipeState = "clear"
         return resp
 
