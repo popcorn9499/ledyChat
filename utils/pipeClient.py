@@ -9,7 +9,11 @@ import codecs
 class pipeClient():
     def __init__(self,pipeName):
         self.pipeName=pipeName
-        self.pipe = open(pipeName, 'r+b', 0) 
+        try:
+            self.pipe = open(pipeName, 'r+b', 0) 
+        except FileNotFoundError:
+            print("Pipe Not Found") #please make this prompt nicer
+
         self.pipeState = "clear"      
 
     async def pipeReader(self): #for whatever reason this reads but however it doesnt get the first two characters
