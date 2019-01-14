@@ -9,6 +9,7 @@ import codecs
 class pipeClient():
     def __init__(self,pipeName):
         self.pipeName=pipeName
+        self.pipe = None
         try:
             self.pipe = open(pipeName, 'r+b', 0) 
         except FileNotFoundError:
@@ -22,19 +23,23 @@ class pipeClient():
         self.pipeState = "inUse"
         print("Starting read")
         pipeReadComplete=False #stays false until the read is complete in case the pipe broke mid read or something
-        while !pipeReadComplete: #retrys the read until its completed successful
-            reader = pipeReader(self.pipe) 
-            reader.start()
-            while reader.reader == None:
-                await asyncio.sleep(0.01)
-            resp = reader.reader
-            while reader.is_alive():
-                await asyncio.sleep(0.01)
-            reader.join()
+        while not pipeReadComplete: #retrys the read until its completed successful
+            if self.pipe != None: #prevents pipe opening the file None
+                reader = pipeReader(self.pipe) 
+                reader.start()
+                while reader.reader == None:
+                    await asyncio.sleep(0.01)
+                resp = reader.reader
+                while reader.is_alive():
+                    await asyncio.sleep(0.01)
+                reader.join()
+            else:
+                resp = "PipeFailedTryAgain"
             if resp == "PipeFailedTryAgain":
                 print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
             else:
                 pipeReadComplete=True
+            await asyncio.sleep(10)
         self.pipeState = "clear"
         return resp
 
