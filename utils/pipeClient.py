@@ -49,15 +49,32 @@ class pipeClient():
                 pipeFailCount=0
         self.pipeState = "inUse"
         print("Active Threads: {0}".format(threading.active_count()))
-        try:
-            self.thread = threading.Thread(name='pipeWriter',target=self.write, args=[self.pipe, data])
-            self.thread.start()
-            while self.thread.is_alive():
-                await asyncio.sleep(0.01)
-            print("YAYYY")
-        except:
-            print("error...")
-            pass
+        pipeWriteComplete=False
+        while not pipeWriteComplete: #here to restart the write in the event it failed
+            try: #here to catch the error of the read 
+                # self.thread = threading.Thread(name='pipeWriter',target=self.write, args=[self.pipe, data])
+                # self.thread.start()
+                writer = pipeWriter(self.pipe) 
+                writer.start()
+                while writer.is_alive():
+                    await asyncio.sleep(0.01)
+
+                while writer.status == None:
+                    await asyncio.sleep(0.01)
+                resp = writer.status
+                while writer.is_alive():
+                    await asyncio.sleep(0.01)
+                writer.join()    
+
+                if resp == "Failed":
+                    print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+                elif resp == "Successful":
+                    pipeWriteComplete = True
+
+                print("YAYYY")
+            except:
+                print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+                pass
         self.pipeState = "clear"
     
     def write(self,pipe,data):
@@ -68,6 +85,23 @@ class pipeClient():
 
     def start(self):
         self.loop.run_forever()
+
+class pipeWriter(threading.Thread):
+    def __init__(self,pipe):
+        self.status = None
+        self.pipe = pipe
+        threading.Thread.__init__(self)
+
+    def run(self): 
+        try:
+            print("writing")
+            pipe.write(data.encode('utf-16-le').strip(codecs.BOM_UTF16)) #this can probably be removed as byte order doesnt seem to be a thing when using -le or -be
+            pipe.seek(0)
+            print("written")
+            self.status="Successful"
+        except:
+            self.status="Failed"
+
 
 class pipeReader(threading.Thread):
     def __init__(self,pipe):
