@@ -72,13 +72,14 @@ class pipeClient():
                 writer.join()    
 
                 if resp == "Failed":
-                    print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+                    print("[Pipe Writer] Ouch Something Closed The Pipe. Please Reload..")
                 elif resp == "Successful":
                     pipeWriteComplete = True
 
                 print("YAYYY")
             except:
-                print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+                print("[Pipe Writer] Ouch Something Closed The Pipe. Please Reload..")
+                await asyncio.sleep(5)
                 pass
         self.pipeState = "clear"
     
