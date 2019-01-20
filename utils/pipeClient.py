@@ -124,4 +124,5 @@ class pipeReader(threading.Thread):
                 self.reader = resp
             except:
                 time.sleep(15)
-                print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+                self.reader="PipeFailedTryAgain"
+                #print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
