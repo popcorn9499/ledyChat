@@ -60,6 +60,7 @@ class pipeClient():
                 resp = "PipeFailedTryAgain"
             if resp == "PipeFailedTryAgain":
                 print("[Pipe Reader] Ouch Something Closed The Pipe. Please Reload..")
+                await self.pipeReload()
             else:
                 pipeReadComplete=True
             await asyncio.sleep(10)
@@ -96,12 +97,14 @@ class pipeClient():
 
                 if resp == "Failed":
                     print("[Pipe Writer] Ouch Something Closed The Pipe. Please Reload..")
+                    await self.pipeReload()
                 elif resp == "Successful":
                     pipeWriteComplete = True
 
                 print("YAYYY")
             except:
                 print("[Pipe Writer] Ouch Something Closed The Pipe. Please Reload..")
+                await self.pipeReload()
                 await asyncio.sleep(5)
                 pass
         self.pipeState = "clear"
