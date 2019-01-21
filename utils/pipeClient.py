@@ -12,7 +12,7 @@ class pipeClient():
         self.pipe = None
         try:
             self.pipe = open(pipeName, 'r+b', 0) 
-        except FileNotFoundError:
+        except:
             print("Pipe Not Found") #please make this prompt nicer
             loop = asyncio.get_event_loop()
             loop.create_task(self.pipeReload())
@@ -22,9 +22,9 @@ class pipeClient():
         connection = False
         if self.pipeState != "Reloading":
             self.pipeState = "Reloading"
-            print("[Pipe] Attempting to reload pipe")
+            print("[Pipe] " + self.pipeName +  " Attempting to reload pipe")
             while not connection:
-                await asyncio.sleep(30)
+                await asyncio.sleep(4)
                 reload = pipeReloader(self.pipeName) 
                 reload.start()
                 while reload.status == None:
@@ -36,6 +36,7 @@ class pipeClient():
                     self.pipe=reload.pipe
                     connection = True
                 reload.join()
+            print("[Pipe] " + self.pipeName +  " Reload Successful") 
             self.pipeState = "clear"
 
 
@@ -142,9 +143,9 @@ class pipeReloader(threading.Thread):
             try:
                 self.pipe = open(self.pipeName, 'r+b', 0) 
                 self.status = "PipeReady"
-            except FileNotFoundError:
+            except: #FileNotFoundError or OSError
                 self.status = "PipeFailed"
-                print("Pipe Not Found") #please make this prompt nicer
+                print("Pipe " + self.pipeName + "  Not Found") #please make this prompt nicer
 
 
 class pipeReader(threading.Thread):
