@@ -14,8 +14,30 @@ class pipeClient():
             self.pipe = open(pipeName, 'r+b', 0) 
         except FileNotFoundError:
             print("Pipe Not Found") #please make this prompt nicer
-
+            loop = asyncio.get_event_loop()
+            loop.create_task(self.pipeReload())
         self.pipeState = "clear"      
+
+    async def pipeReload(self):
+        connection = False
+        if self.pipeState != "Reloading":
+            self.pipeState = "Reloading"
+            print("[Pipe] Attempting to reload pipe")
+            while not connection:
+                await asyncio.sleep(30)
+                reload = pipeReloader(self.pipeName) 
+                reload.start()
+                while reload.status == None:
+                    await asyncio.sleep(0.01)
+                resp = reload.status
+                while reload.is_alive():
+                    await asyncio.sleep(0.01)
+                if resp == "PipeReady":
+                    self.pipe=reload.pipe
+                    connection = True
+                reload.join()
+            self.pipeState = "clear"
+
 
     async def pipeReader(self): #for whatever reason this reads but however it doesnt get the first two characters
         while self.pipeState != "clear":
@@ -107,6 +129,22 @@ class pipeWriter(threading.Thread):
             self.status="Successful"
         except:
             self.status="Failed"
+
+class pipeReloader(threading.Thread):
+    def __init__(self,pipeName):
+        self.status = None
+        self.pipe = None
+        self.pipeName = pipeName
+        threading.Thread.__init__(self)
+
+    def run(self):  
+        while self.status == None:
+            try:
+                self.pipe = open(self.pipeName, 'r+b', 0) 
+                self.status = "PipeReady"
+            except FileNotFoundError:
+                self.status = "PipeFailed"
+                print("Pipe Not Found") #please make this prompt nicer
 
 
 class pipeReader(threading.Thread):
