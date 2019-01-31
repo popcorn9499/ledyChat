@@ -70,12 +70,16 @@ class pipeClient():
     async def pipeWriter(self,data):
         print("blah")
         pipeFailCount = 0
+        cyclesWithoutWorking = 0
         while self.pipeState != "clear":
             await asyncio.sleep(0.01)
             pipeFailCount +=1
             if (pipeFailCount==20000):
                 print("waiting")
                 pipeFailCount=0
+                if cyclesWithoutWorking == 3:
+                    self.pipeState="clear"
+                cyclesWithoutWorking +=1
         self.pipeState = "inUse"
         print("Active Threads: {0}".format(threading.active_count()))
         pipeWriteComplete=False
