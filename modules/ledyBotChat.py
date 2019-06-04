@@ -7,6 +7,7 @@ from utils import logger
 from utils import fileIO
 import os
 from utils import pipeClient
+from utils import tcpStream
 
 
 class ledyBotChat:
@@ -26,11 +27,14 @@ class ledyBotChat:
         
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
-        self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
+        #self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
-        self.ledyPipeObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the command pipe client
-        self.ledyPipeReaderObj = pipeClient.pipeClient(self.pipeNames[1]) #loads the reader pipe client
+        # self.ledyPipeObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the command pipe client
+        # self.ledyPipeReaderObj = pipeClient.pipeClient(self.pipeNames[1]) #loads the reader pipe client
+
+        self.tcpObj = tcpStream.tcpServer("10000")
+
         loop.create_task(self.ledyReader())
         #loop.create_task(self.tradequeueOnOff(self.tradequeueEnable))
         self.l.logger.info("Started")
@@ -52,7 +56,7 @@ class ledyBotChat:
     async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads 
         enabled = False
         while (enabled != True):
-            await self.ledyPipeObj.pipeWriter("togglequeue")
+            await self.tcpObj.writer("togglequeue")
             commandOutput = await self.getMessage("command")
             if (tradequeueEnable == True):
                 enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
@@ -116,7 +120,7 @@ class ledyBotChat:
 
 
     async def startLedyBot(self,message,command): #sends the start command to start the bot
-        await self.ledyPipeObj.pipeWriter("startgtsbot")
+        await self.tcpObj.writer("startgtsbot")
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
@@ -124,21 +128,21 @@ class ledyBotChat:
 
 
     async def stopLedyBot(self,message,command): #sends the stop command to stop the bot
-        await self.ledyPipeObj.pipeWriter("stopgtsbot")
+        await self.tcpObj.writer("stopgtsbot")
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
 
             
     async def connectDSLedyBot(self,message,command): #starts the bot to connect to the 3ds
-        await self.ledyPipeObj.pipeWriter("connect3ds")
+        await self.tcpObj.writer("connect3ds")
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
   
 
     async def disconnectDSLedyBot(self,message,command): #disconnects from the 3ds
-        await self.ledyPipeObj.pipeWriter("disconnect3ds")   
+        await self.tcpObj.writer("disconnect3ds")   
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
@@ -147,18 +151,18 @@ class ledyBotChat:
     async def refreshLedyBot(self,message,command): #refreshs giveaway details and bans
         splitMsg = message.Message.Contents.split(" ")
         if len(splitMsg) == 3:
-            await self.ledyPipeObj.pipeWriter("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
+            await self.tcpObj.writer("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
         elif len(splitMsg) == 2:
-            await self.ledyPipeObj.pipeWriter("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
+            await self.tcpObj.writer("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
         elif len(splitMsg) == 1:
-            await self.ledyPipeObj.pipeWriter("refresh") 
+            await self.tcpObj.writer("refresh") 
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
     
 
     async def tradequeueLedyBot(self,message,command): #enables or disables trade queue
-        await self.ledyPipeObj.pipeWriter("togglequeue")
+        await self.tcpObj.writer("togglequeue")
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
@@ -166,9 +170,9 @@ class ledyBotChat:
     async def viewqueueLedyBot(self,message,command): #views the trade queue. it can accept whatever page u wanna view of the trade queue as well
         splitMsg = splitMsg = message.Message.Contents.split(" ")
         if len(splitMsg) == 2:
-            await self.ledyPipeObj.pipeWriter("viewqueue " + splitMsg[1])
+            await self.tcpObj.writer("viewqueue " + splitMsg[1])
         else:
-            await self.ledyPipeObj.pipeWriter("viewqueue")
+            await self.tcpObj.write("viewqueue")
         commandOutput = await self.getMessage("command")
         botRoles= {"":0}
         await self.processMsg(message=commandOutput,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
