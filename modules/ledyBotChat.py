@@ -58,13 +58,13 @@ class ledyBotChat:
 
     async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads 
         enabled = False
-        while (enabled != True):
-            await self.tcpObj.writer("togglequeue")
-            if (tradequeueEnable == True):
-                enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
-            else:
-                enabled=commandOutput=="command:togglequeue Trade Queue Disabled."
-            await asyncio.sleep(2)
+        # while (enabled != True):
+        #     await self.tcpObj.writer.write("togglequeue")
+        #     if (tradequeueEnable == True):
+        #         enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
+        #     else:
+        #         enabled=commandOutput=="command:togglequeue Trade Queue Disabled."
+        #     await asyncio.sleep(2)
 
 
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
@@ -129,7 +129,7 @@ class ledyBotChat:
         await self.getResponse("command:startgtsbot",self.startLedyBotCallback,message)
         
         
-    async def startLedyBotCallback(self,response,message,command):
+    async def startLedyBotCallback(self,response,command,message):
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
         await self.tradequeueOnOff(self.tradequeueEnable)
