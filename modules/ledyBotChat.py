@@ -59,7 +59,7 @@ class ledyBotChat:
     async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads 
         enabled = False #potentially redo how this sucker works maybe modify the visual studio code to make this actually work properly
         # while (enabled != True):
-        #     await self.tcpObj.writer.write("togglequeue")
+        #     await self.tcpObj.write("togglequeue")
         #     if (tradequeueEnable == True):
         #         enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
         #     else:
@@ -136,7 +136,7 @@ class ledyBotChat:
 
 
     async def stopLedyBot(self,message,command): #sends the stop command to stop the bot
-        await self.tcpObj.writer("stopgtsbot")
+        await self.tcpObj.write("stopgtsbot")
         await self.getResponse("command:startgtsbot",self.stopLedyBotCallback,message)
 
     async def stopLedyBotCallback(self,response,message):   
@@ -145,7 +145,7 @@ class ledyBotChat:
 
             
     async def connectDSLedyBot(self,message,command): #starts the bot to connect to the 3ds
-        await self.tcpObj.writer("connect3ds")
+        await self.tcpObj.write("connect3ds")
         await self.getResponse("command:connect3ds",self.connectDSLedyBotCallback,message)
 
     async def connectDSLedyBotCallback(self,response,message):   
@@ -154,7 +154,7 @@ class ledyBotChat:
   
 
     async def disconnectDSLedyBot(self,message,command): #disconnects from the 3ds
-        await self.tcpObj.writer("disconnect3ds")   
+        await self.tcpObj.write("disconnect3ds")   
         await self.getResponse("command:disconnect3ds",self.disconnectDSLedyBotCallback,message)
 
     async def disconnectDSLedyBotCallback(self,response,message):   
@@ -165,11 +165,11 @@ class ledyBotChat:
     async def refreshLedyBot(self,message,command): #refreshs giveaway details and bans
         splitMsg = message.Message.Contents.split(" ")
         if len(splitMsg) == 3:
-            await self.tcpObj.writer("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
+            await self.tcpObj.write("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
         elif len(splitMsg) == 2:
-            await self.tcpObj.writer("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
+            await self.tcpObj.write("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
         elif len(splitMsg) == 1:
-            await self.tcpObj.writer("refresh") 
+            await self.tcpObj.write("refresh") 
         await self.getResponse("command:refresh",self.refreshLedyBotCallback,message)
 
     async def refreshLedyBotCallback(self,response,message):   
@@ -178,7 +178,7 @@ class ledyBotChat:
     
 
     async def tradequeueLedyBot(self,message,command): #enables or disables trade queue
-        await self.tcpObj.writer("togglequeue")
+        await self.tcpObj.write("togglequeue")
         await self.getResponse("command:togglequeue",self.tradequeueLedyBotCallback,message)
 
 
@@ -189,9 +189,9 @@ class ledyBotChat:
     async def viewqueueLedyBot(self,message,command): #views the trade queue. it can accept whatever page u wanna view of the trade queue as well
         splitMsg = splitMsg = message.Message.Contents.split(" ")
         if len(splitMsg) == 2:
-            await self.tcpObj.writer("viewqueue " + splitMsg[1])
+            await self.tcpObj.write("viewqueue " + splitMsg[1])
         else:
-            await self.tcpObj.writer("viewqueue")
+            await self.tcpObj.write("viewqueue")
         await self.getResponse("command:viewqueue",self.viewqueueLedyBotCallback,message)
         
     async def viewqueueLedyBotCallback(self,response,message):       
