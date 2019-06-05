@@ -92,14 +92,15 @@ class ledyBotChat:
 
 
     async def reader(self,message):
-        pass
+        self.l.logger.info("reading message: " + message)
+        await self.handleResponseList(message)
 
     async def handleResponseList(self,message): #sends callbacks for responses from the tcp stream
         messageType = message.split(" ")[0]
         for response in self.responseList:
             if response["messageType"] == messageType:
-                response["callback"](message,*response["args"])
-                responseList.remove(response)
+                await response["callback"](message,response["messageType"],*response["args"])
+                self.responseList.remove(response)
 
     async def getMessageaa(self,messageType): #cycles message in case it recieves a msg not a command respond
         commandOutput = ""
