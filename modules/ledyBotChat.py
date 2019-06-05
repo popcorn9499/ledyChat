@@ -137,18 +137,27 @@ class ledyBotChat:
 
     async def stopLedyBot(self,message,command): #sends the stop command to stop the bot
         await self.tcpObj.writer("stopgtsbot")
+        await self.getResponse("command:startgtsbot",self.stopLedyBotCallback,message)
+
+    async def stopLedyBotCallback(self,response,message):   
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
 
             
     async def connectDSLedyBot(self,message,command): #starts the bot to connect to the 3ds
         await self.tcpObj.writer("connect3ds")
+        await self.getResponse("command:connect3ds",self.connectDSLedyBotCallback,message)
+
+    async def connectDSLedyBotCallback(self,response,message):   
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
   
 
     async def disconnectDSLedyBot(self,message,command): #disconnects from the 3ds
         await self.tcpObj.writer("disconnect3ds")   
+        await self.getResponse("command:disconnect3ds",self.disconnectDSLedyBotCallback,message)
+
+    async def disconnectDSLedyBotCallback(self,response,message):   
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
   
@@ -161,13 +170,19 @@ class ledyBotChat:
             await self.tcpObj.writer("refresh {0} {1}".format(splitMsg[1],splitMsg[2])) 
         elif len(splitMsg) == 1:
             await self.tcpObj.writer("refresh") 
+        await self.getResponse("command:refresh",self.refreshLedyBotCallback,message)
 
+    async def refreshLedyBotCallback(self,response,message):   
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
     
 
     async def tradequeueLedyBot(self,message,command): #enables or disables trade queue
         await self.tcpObj.writer("togglequeue")
+        await self.getResponse("command:togglequeue",self.tradequeueLedyBotCallback,message)
+
+
+    async def tradequeueLedyBotCallback(self,response,message):   
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
 
@@ -176,7 +191,10 @@ class ledyBotChat:
         if len(splitMsg) == 2:
             await self.tcpObj.writer("viewqueue " + splitMsg[1])
         else:
-            await self.tcpObj.write("viewqueue")
+            await self.tcpObj.writer("viewqueue")
+        await self.getResponse("command:viewqueue",self.viewqueueLedyBotCallback,message)
+        
+    async def viewqueueLedyBotCallback(self,response,message):       
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
         
