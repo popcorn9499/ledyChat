@@ -88,12 +88,14 @@ class ledyBotChat:
                 formatOpts = {"%ledyTrainerName%":trainer,"%ledyNickname%":name,"%ledyCountry%":country,"%ledySubReddit%":subReddit,"%ledyPokemon%":pokemon,"%ledyFC%":fc,"%ledyPage%":page,"%ledyIndex%":index}
                 await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts,formattingSettings=val["TradeFormatting"],formatType="Other")
             else:
-                await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
+                pass
+                #await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
 
 
     async def reader(self,message):
         self.l.logger.info("reading message: " + message)
         await self.handleResponseList(message)
+        await self.ledyReader(message)
 
     async def handleResponseList(self,message): #sends callbacks for responses from the tcp stream
         messageType = message.split(" ")[0]
