@@ -57,7 +57,7 @@ class ledyBotChat:
 
 
     async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads 
-        enabled = False
+        enabled = False #potentially redo how this sucker works maybe modify the visual studio code to make this actually work properly
         # while (enabled != True):
         #     await self.tcpObj.writer.write("togglequeue")
         #     if (tradequeueEnable == True):
