@@ -99,7 +99,7 @@ class ledyBotChat:
         messageType = message.split(" ")[0]
         for response in self.responseList:
             if response["messageType"] == messageType:
-                await response["callback"](message,response["messageType"],*response["args"])
+                await response["callback"](message,*response["args"])
                 self.responseList.remove(response)
 
     async def getMessageaa(self,messageType): #cycles message in case it recieves a msg not a command respond
@@ -129,7 +129,7 @@ class ledyBotChat:
         await self.getResponse("command:startgtsbot",self.startLedyBotCallback,message)
         
         
-    async def startLedyBotCallback(self,response,command,message):
+    async def startLedyBotCallback(self,response,message):
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
         await self.tradequeueOnOff(self.tradequeueEnable)
