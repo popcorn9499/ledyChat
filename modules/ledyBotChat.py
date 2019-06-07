@@ -31,8 +31,13 @@ class ledyBotChat:
         loop.create_task(self.ledyCommands())#creates the add commands task
         # self.ledyPipeObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the command pipe client
         # self.ledyPipeReaderObj = pipeClient.pipeClient(self.pipeNames[1]) #loads the reader pipe client
+        if not 'port' in fileIO.fileLoad(self.generalFileName):
+            temp = fileIO.fileLoad(self.generalFileName)
+            temp.append({"port": "10000"}) #default port
+            fileIO.fileSave(self.generalFileName,temp) #save the new config
 
-        self.tcpObj = tcpStream.tcpServer("10000")
+        self.tcpPort = fileIO.fileLoad(self.generalFileName)["port"]
+        self.tcpObj = tcpStream.tcpServer(self.tcpPort)
         loop.create_task(self.tcpObj.readerCallBackAdder(self.reader))
 
         #loop.create_task(self.ledyReader())
