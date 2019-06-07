@@ -26,25 +26,19 @@ class ledyBotChat:
         
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
-        #self.pipeNames = fileIO.fileLoad(self.ledyPipeNameFile)
+
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
-        # self.ledyPipeObj = pipeClient.pipeClient(self.pipeNames[0]) #loads the command pipe client
-        # self.ledyPipeReaderObj = pipeClient.pipeClient(self.pipeNames[1]) #loads the reader pipe client
+
         if not 'port' in fileIO.fileLoad(self.generalFileName):
             temp = fileIO.fileLoad(self.generalFileName)
-            temp.append({"port": "10000"}) #default port
+            temp.update({"port": "10000"}) #default port
             fileIO.fileSave(self.generalFileName,temp) #save the new config
 
         self.tcpPort = fileIO.fileLoad(self.generalFileName)["port"]
         self.tcpObj = tcpStream.tcpServer(self.tcpPort)
         loop.create_task(self.tcpObj.readerCallBackAdder(self.reader))
-
-        #loop.create_task(self.ledyReader())
-
         self.responseList = []
-
-        #loop.create_task(self.tradequeueOnOff(self.tradequeueEnable))
         self.l.logger.info("Started")
 
     def checkFolder(self):
@@ -59,18 +53,6 @@ class ledyBotChat:
             self.l.logger.info("Creating...")
             pipeNames = [r"\\.\pipe\LedyChat",r"\\.\pipe\LedyChatReader"]
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
-
-
-    async def tradequeueOnOff(self,tradequeueEnable): #enable of disable tradequeue when the bot loads 
-        enabled = False #potentially redo how this sucker works maybe modify the visual studio code to make this actually work properly
-        # while (enabled != True):
-        #     await self.tcpObj.write("togglequeue")
-        #     if (tradequeueEnable == True):
-        #         enabled=commandOutput=="command:togglequeue Trade Queue Enabled."
-        #     else:
-        #         enabled=commandOutput=="command:togglequeue Trade Queue Disabled."
-        #     await asyncio.sleep(2)
-
 
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
@@ -139,7 +121,6 @@ class ledyBotChat:
     async def startLedyBotCallback(self,response,message):
         botRoles= {"":0}
         await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
-        await self.tradequeueOnOff(self.tradequeueEnable)
 
 
     async def stopLedyBot(self,message,command): #sends the stop command to stop the bot
