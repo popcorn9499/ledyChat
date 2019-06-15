@@ -160,9 +160,9 @@ class ledyBotChat:
 
         try: #checks for the fc in the list
             fcData.index(checkFor)
-            result = "Data Found"
+            result = command["userBanned"]
         except ValueError:
-            result = "Data Not Found"
+            result = command["userNotBanned"]
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
 
