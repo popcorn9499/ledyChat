@@ -113,6 +113,47 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyDsRefresh",commandHandler=self.refreshLedyBot)
         config.events.addCommandType(commandType="ledyDsTradequeue",commandHandler=self.tradequeueLedyBot)
         config.events.addCommandType(commandType="ledyDsViewqueue",commandHandler=self.viewqueueLedyBot)
+        config.events.addCommandType(commandType="ledyListBanFCList",commandHandler=self.listBanFCsLedyBot)
+
+    async def listBanFCsLedyBot(self,message,command): #sends the start command to start the bot
+        await self.tcpObj.write("listBanFCList")
+        await self.getResponse("command:listBanFCList",self.listBanFCsBotCallback,message,command)
+        
+        
+    async def listBanFCsBotCallback(self,response,message,command):
+        fcData = []
+        for x in self.onGoingCommandList:
+            if x["message"] == message:
+                fcData = x["fcData"]
+        
+        details = response.split(" ")
+        finalResponse = False
+        if details[1] == ":Done":
+            finalResponse = True
+            details.pop(1)
+        details.pop(0)
+
+        fcResponse = details[0].split("&")
+
+        fcData = fcData + fcResponse
+
+        botRoles= {"":0}
+        if not finalResponse:
+            return    
+        await self.processMsg(message=str(fcData),username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
+        try:
+            checkFor = message.Message.Contents.split(" ")[1]
+        except IndexError:
+            result = command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+
+        try:
+            fcData.index(checkFor)
+            result = "Data Found"
+        except ValueError:
+            result = "Data Not Found"
+        await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
 
 
 
