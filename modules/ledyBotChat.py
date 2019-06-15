@@ -26,6 +26,9 @@ class ledyBotChat:
         
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
+        
+
+        self.onGoingCommandList = []
 
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
