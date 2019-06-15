@@ -121,39 +121,49 @@ class ledyBotChat:
         
         
     async def listBanFCsBotCallback(self,response,message,command):
-        fcData = []
-        for x in self.onGoingCommandList:
+        botRoles= {"":0}
+        fcData = [] #stores all the fc data in between and during this command
+        onGoing = None
+        finalResponse = False #keeps track of whether ledybot has more fcs to talk about
+        for x in self.onGoingCommandList: #cycles to see if this command has been started before and not finished
+            #this will only occur is the fc list is fairly large
             if x["message"] == message:
                 fcData = x["fcData"]
+                onGoing = x
+                break
+        
         
         details = response.split(" ")
-        finalResponse = False
-        if details[1] == ":Done":
+        
+        if details[1] == ":Done": #determines if this is a final response from the ledybot connection or not
             finalResponse = True
             details.pop(1)
-        details.pop(0)
 
         fcResponse = details[0].split("&")
 
         fcData = fcData + fcResponse
 
-        botRoles= {"":0}
-        if not finalResponse:
+        if onGoing != None:#keeps the ongoing message list clear
+            self.onGoingCommandList.remove(onGoing)
+
+        if not finalResponse: #if not final response create a onGoingCommand in the queue
+            info = {"message":message, "fcData": fcData}
+            self.onGoingCommandList.append(info)
             return    
-        await self.processMsg(message=str(fcData),username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
-        try:
+
+        try: #if the command isnt long enough complain to the user
             checkFor = message.Message.Contents.split(" ")[1]
         except IndexError:
             result = command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
 
-        try:
+        try: #checks for the fc in the list
             fcData.index(checkFor)
             result = "Data Found"
         except ValueError:
             result = "Data Not Found"
-        await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+        await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
 
 
