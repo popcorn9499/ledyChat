@@ -123,6 +123,10 @@ class ledyBotChat:
 
     async def addFC(self,message,command):
         fc = ""
+        try:
+            self.fcList = fileIO.fileLoad(self.fcListFileName)
+        except:
+            pass
         try: #if the command isnt long enough complain to the user
             fc = message.Message.Contents.split(" ")[1]
         except IndexError:
