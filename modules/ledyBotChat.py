@@ -123,6 +123,7 @@ class ledyBotChat:
 
     async def addFC(self,message,command):
         fc = ""
+        botRoles= {"":0}
         try:
             self.fcList = fileIO.fileLoad(self.fcListFileName)
         except:
