@@ -158,7 +158,12 @@ class ledyBotChat:
         self.fcList.append({"username": message.Message.User,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
         print("Adding the fc")
-        await self.tcpObj.write("addFcTrade " + fc)
+        try:
+            await self.tcpObj.write("addFcTrade " + fc)
+        except:
+            result = command["botDown"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+
         await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
     async def viewFC(self,message,command):
