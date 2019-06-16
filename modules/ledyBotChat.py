@@ -17,6 +17,7 @@ class ledyBotChat:
         self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
         self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
         self.generalFileName="{0}{1}general.json".format(self.ledyDir,os.sep)
+        self.fcListFileName ="{0}{1}fcList.json".format(self.ledyDir,os.sep)
         #checks for the files to exist
         self.checkFolder()
         self.checkPipeFile()
@@ -24,8 +25,20 @@ class ledyBotChat:
 
         fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
         
+        #fileIO.checkFile("config-example{0}LedyChat{0}fcList.json".format(os.sep),"config{0}LedyChat{0}fcList.json".format(os.sep),"fcList.json",self.l)
+    
+        try:
+            self.fcList = fileIO.fileLoad(self.fcListFileName)
+        except:
+            self.fcList = [] 
+
+        #fileIO.fileLoad(self.fcListFileName)
+
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
+        
+
+        self.onGoingCommandList = []
 
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
@@ -38,6 +51,7 @@ class ledyBotChat:
         self.tcpPort = fileIO.fileLoad(self.generalFileName)["port"]
         self.tcpObj = tcpStream.tcpServer(self.tcpPort)
         loop.create_task(self.tcpObj.readerCallBackAdder(self.reader))
+        loop.create_task(self.tcpObj.onConnectCallBackAdder(self.sendFCs))
         self.responseList = []
         self.l.logger.info("Started")
 
@@ -53,6 +67,10 @@ class ledyBotChat:
             self.l.logger.info("Creating...")
             pipeNames = [r"\\.\pipe\LedyChat",r"\\.\pipe\LedyChatReader"]
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
+
+    async def sendFCs(self):
+        for fc in self.fcList:
+           await self.tcpObj.write("addFcTrade " + fc["fc"])
 
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
@@ -110,6 +128,81 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyDsRefresh",commandHandler=self.refreshLedyBot)
         config.events.addCommandType(commandType="ledyDsTradequeue",commandHandler=self.tradequeueLedyBot)
         config.events.addCommandType(commandType="ledyDsViewqueue",commandHandler=self.viewqueueLedyBot)
+        config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
+        config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
+
+    async def addFC(self,message,command):
+        fc = ""
+        botRoles= {"":0}
+        try: #if the command isnt long enough complain to the user
+            fc = message.Message.Contents.split(" ")[1]
+        except IndexError:
+            result = command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+        fc = fc.replace("-","")
+        fc = fc.replace(" ", "")
+        self.fcList.append({"username": message.Message.User,"fc": fc})
+        fileIO.fileSave(self.fcListFileName,self.fcList)
+        print("Adding the fc")
+        await self.tcpObj.write("addFcTrade " + fc)
+        await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
+
+
+
+    async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
+        await self.tcpObj.write("listBanFCList")
+        await self.getResponse("command:listBanFCList",self.searchBanFCsBotCallback,message,command)
+        
+        
+    async def searchBanFCsBotCallback(self,response,message,command):
+        botRoles= {"":0}
+        fcData = [] #stores all the fc data in between and during this command
+        onGoing = None
+        finalResponse = False #keeps track of whether ledybot has more fcs to talk about
+        for x in self.onGoingCommandList: #cycles to see if this command has been started before and not finished
+            #this will only occur is the fc list is fairly large
+            if x["message"] == message:
+                fcData = x["fcData"]
+                onGoing = x
+                break
+        
+        
+        details = response.split(" ")
+        
+        if details[1] == ":Done": #determines if this is a final response from the ledybot connection or not
+            finalResponse = True
+            details.pop(1)
+
+        fcResponse = details[1].split("&")
+
+        fcData = fcData + fcResponse
+
+        if onGoing != None:#keeps the ongoing message list clear
+            self.onGoingCommandList.remove(onGoing)
+
+        if not finalResponse: #if not final response create a onGoingCommand in the queue
+            info = {"message":message, "fcData": fcData}
+            self.onGoingCommandList.append(info)
+            return    
+
+        try: #if the command isnt long enough complain to the user
+            checkFor = message.Message.Contents.split(" ")[1]
+        except IndexError:
+            result = command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+
+        banned = False #inocent until proven guilty
+        for banFC in fcData: #cycles list for banned fcs
+            if banFC == checkFor:
+                banned = True
+        if banned:
+            result = command["userBanned"]
+        else:
+            result = command["userNotBanned"]
+
+        await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
 
 
