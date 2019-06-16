@@ -27,7 +27,12 @@ class ledyBotChat:
         
         #fileIO.checkFile("config-example{0}LedyChat{0}fcList.json".format(os.sep),"config{0}LedyChat{0}fcList.json".format(os.sep),"fcList.json",self.l)
     
-        self.fcList = [] #fileIO.fileLoad(self.fcListFileName)
+        try:
+            self.fcList = fileIO.fileLoad(self.fcListFileName)
+        except:
+            self.fcList = [] 
+
+        #fileIO.fileLoad(self.fcListFileName)
 
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
@@ -125,10 +130,6 @@ class ledyBotChat:
     async def addFC(self,message,command):
         fc = ""
         botRoles= {"":0}
-        try:
-            self.fcList = fileIO.fileLoad(self.fcListFileName)
-        except:
-            pass
         try: #if the command isnt long enough complain to the user
             fc = message.Message.Contents.split(" ")[1]
         except IndexError:
