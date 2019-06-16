@@ -146,7 +146,7 @@ class ledyBotChat:
 
     async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
         await self.tcpObj.write("listBanFCList")
-        await self.getResponse("command:listBanFCList",self.listBanFCsBotCallback,message,command)
+        await self.getResponse("command:listBanFCList",self.searchBanFCsBotCallback,message,command)
         
         
     async def searchBanFCsBotCallback(self,response,message,command):
