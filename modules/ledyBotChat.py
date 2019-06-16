@@ -69,8 +69,16 @@ class ledyBotChat:
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
 
     async def sendFCs(self):
+        await checkFCs()
         for fc in self.fcList:
            await self.tcpObj.write("addFcTrade " + fc["fc"])
+
+    async def checkFCs(self): #checks for duplicate fcs
+        for fcCheck in self.fcList:
+            for fc in self.fcList:
+                if fc["fc"] == fcCheck["fc"]:
+                    self.fcList.remove(fc)
+        await self.saveDataFiles()
 
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
