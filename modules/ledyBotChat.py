@@ -113,14 +113,14 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyDsRefresh",commandHandler=self.refreshLedyBot)
         config.events.addCommandType(commandType="ledyDsTradequeue",commandHandler=self.tradequeueLedyBot)
         config.events.addCommandType(commandType="ledyDsViewqueue",commandHandler=self.viewqueueLedyBot)
-        config.events.addCommandType(commandType="ledyListBanFCList",commandHandler=self.listBanFCsLedyBot)
+        config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
 
-    async def listBanFCsLedyBot(self,message,command): #sends the start command to start the bot
+    async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
         await self.tcpObj.write("listBanFCList")
         await self.getResponse("command:listBanFCList",self.listBanFCsBotCallback,message,command)
         
         
-    async def listBanFCsBotCallback(self,response,message,command):
+    async def searchBanFCsBotCallback(self,response,message,command):
         botRoles= {"":0}
         fcData = [] #stores all the fc data in between and during this command
         onGoing = None
