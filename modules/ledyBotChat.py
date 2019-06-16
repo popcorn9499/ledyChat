@@ -142,6 +142,11 @@ class ledyBotChat:
             return
         fc = fc.replace("-","")
         fc = fc.replace(" ", "")
+        if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
+            result = command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+
         self.fcList.append({"username": message.Message.User,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
         print("Adding the fc")
