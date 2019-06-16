@@ -134,6 +134,7 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyDsViewqueue",commandHandler=self.viewqueueLedyBot)
         config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
         config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
+        config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
 
     async def addFC(self,message,command):
         fc = ""
@@ -163,7 +164,14 @@ class ledyBotChat:
         await self.tcpObj.write("addFcTrade " + fc)
         await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
-
+    async def viewFC(self,message,command):
+        user = message.Message.User
+        botRoles= {"":0}
+        for fc in self.fcList:
+            if fc["username"] == user:
+                response = "Your fc: " + fc["fc"]
+                await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
+  
 
     async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
         await self.tcpObj.write("listBanFCList")
