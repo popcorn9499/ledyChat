@@ -46,6 +46,7 @@ class ledyBotChat:
         self.tcpPort = fileIO.fileLoad(self.generalFileName)["port"]
         self.tcpObj = tcpStream.tcpServer(self.tcpPort)
         loop.create_task(self.tcpObj.readerCallBackAdder(self.reader))
+        loop.create_task(self.tcpObj.onConnectCallBackAdder(self.sendFCs))
         self.responseList = []
         self.l.logger.info("Started")
 
