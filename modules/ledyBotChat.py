@@ -174,7 +174,7 @@ class ledyBotChat:
             finalResponse = True
             details.pop(1)
 
-        fcResponse = details[0].split("&")
+        fcResponse = details[1].split("&")
 
         fcData = fcData + fcResponse
 
@@ -193,11 +193,15 @@ class ledyBotChat:
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
 
-        try: #checks for the fc in the list
-            fcData.index(checkFor)
+        banned = False #inocent until proven guilty
+        for banFC in fcData: #cycles list for banned fcs
+            if banFC == checkFor:
+                banned = True
+        if banned:
             result = command["userBanned"]
-        except ValueError:
+        else:
             result = command["userNotBanned"]
+
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
 
