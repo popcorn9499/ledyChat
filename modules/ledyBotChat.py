@@ -17,6 +17,7 @@ class ledyBotChat:
         self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
         self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
         self.generalFileName="{0}{1}general.json".format(self.ledyDir,os.sep)
+        self.fcListFileName ="{0}{1}fcList.json".format(self.ledyDir,os.sep)
         #checks for the files to exist
         self.checkFolder()
         self.checkPipeFile()
@@ -24,6 +25,10 @@ class ledyBotChat:
 
         fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
         
+        #fileIO.checkFile("config-example{0}LedyChat{0}fcList.json".format(os.sep),"config{0}LedyChat{0}fcList.json".format(os.sep),"fcList.json",self.l)
+    
+        self.fcList = [] #fileIO.fileLoad(self.fcListFileName)
+
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
         
@@ -124,8 +129,11 @@ class ledyBotChat:
             result = command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
-
+        self.fcList.append({"username": message.Message.Author,"fc": fc})
+        fileIO.fileSave(self.fcListFileName,self.fcList)
         await self.tcpObj.write("addFcTrade " + fc)
+        await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
+
 
 
     async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
