@@ -142,7 +142,7 @@ class ledyBotChat:
             return
         fc = fc.replace("-","")
         fc = fc.replace(" ", "")
-        self.fcList.append({"username": message.Message.Author,"fc": fc})
+        self.fcList.append({"username": message.Message.User,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
         print("Adding the fc")
         await self.tcpObj.write("addFcTrade " + fc)
