@@ -114,6 +114,19 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyDsTradequeue",commandHandler=self.tradequeueLedyBot)
         config.events.addCommandType(commandType="ledyDsViewqueue",commandHandler=self.viewqueueLedyBot)
         config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
+        config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
+
+    async def addFC(self,message,command):
+        fc = ""
+        try: #if the command isnt long enough complain to the user
+            fc = message.Message.Contents.split(" ")[1]
+        except IndexError:
+            result = command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+
+        await self.tcpObj.write("addFcTrade " + fc)
+
 
     async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
         await self.tcpObj.write("listBanFCList")
