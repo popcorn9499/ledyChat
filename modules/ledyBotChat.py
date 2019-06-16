@@ -25,14 +25,10 @@ class ledyBotChat:
 
         fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
         
-        #fileIO.checkFile("config-example{0}LedyChat{0}fcList.json".format(os.sep),"config{0}LedyChat{0}fcList.json".format(os.sep),"fcList.json",self.l)
-    
         try:
             self.fcList = fileIO.fileLoad(self.fcListFileName)
         except:
             self.fcList = [] 
-
-        #fileIO.fileLoad(self.fcListFileName)
 
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
