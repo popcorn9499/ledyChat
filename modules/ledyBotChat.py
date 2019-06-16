@@ -147,6 +147,12 @@ class ledyBotChat:
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
 
+        for fcL in self.fcList: #cycles the fcs to see if the fc exists already
+            if fcL["fc"] == fc:
+                result = command["TooManyFCs"]
+                await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+                return
+
         self.fcList.append({"username": message.Message.User,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
         print("Adding the fc")
