@@ -35,7 +35,6 @@ class ledyBotChat:
         
 
         self.onGoingCommandList = []
-
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
 
@@ -65,7 +64,7 @@ class ledyBotChat:
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
 
     async def sendFCs(self):
-        await checkFCs()
+        await self.checkFCs()
         for fc in self.fcList:
            await self.tcpObj.write("addFcTrade " + fc["fc"])
 
@@ -74,7 +73,7 @@ class ledyBotChat:
             for fc in self.fcList:
                 if fc["fc"] == fcCheck["fc"]:
                     self.fcList.remove(fc)
-        await self.saveDataFiles()
+        fileIO.fileSave(self.fcListFileName,self.fcList)
 
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
