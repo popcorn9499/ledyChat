@@ -68,6 +68,10 @@ class ledyBotChat:
             pipeNames = [r"\\.\pipe\LedyChat",r"\\.\pipe\LedyChatReader"]
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
 
+    async def sendFCs(self):
+        for fc in self.fcList:
+           await self.tcpObj.write("addFcTrade " + fc["fc"])
+
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
         self.l.logger.info("[but] {0}".format(commandOutput))
