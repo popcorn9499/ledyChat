@@ -133,8 +133,11 @@ class ledyBotChat:
             result = command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
+        fc = fc.replace("-","")
+        fc = fc.replace(" ", "")
         self.fcList.append({"username": message.Message.Author,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
+        print("Adding the fc")
         await self.tcpObj.write("addFcTrade " + fc)
         await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
