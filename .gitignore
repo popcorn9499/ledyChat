@@ -38,3 +38,5 @@ modules/chatLog\.py
 modules/command\.py
 
 modules/console\.py
+
+config/command/ledyCommands/
