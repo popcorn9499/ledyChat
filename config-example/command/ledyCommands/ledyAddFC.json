@@ -1,0 +1,8 @@
+{
+    "CommandType":"ledyAddFC",
+    "Command": "!fcAdd",
+    "CommandDetails": "",
+    "RolesAllowed": ["@everyone","Normal"],
+    "HelpDetails": "fcAdd {fc}",
+    "botDown": "ledybot died but we saved your fc"
+}

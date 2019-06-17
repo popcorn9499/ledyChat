@@ -1,3 +1,4 @@
 {
-	"Tradequeue Enable": true
+    "Tradequeue Enable": true,
+    "port": "10000"
 }

@@ -1,7 +1,0 @@
-{
-    "CommandType":"ledyDsTradequeue",
-    "Command": "!ledyTradequeue",
-    "CommandDetails": "",
-    "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "toggles trade queue on and off"
-}

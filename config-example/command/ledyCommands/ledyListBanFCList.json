@@ -1,0 +1,9 @@
+{
+    "CommandType":"ledySearchBanFCList",
+    "Command": "!fcBanSearch",
+    "CommandDetails": "",
+    "RolesAllowed": ["@everyone","Normal"],
+    "HelpDetails": "This command searches fcs determining if you are banned \r\n    !listttt {fc}",
+    "userBanned":" has been banned from the trades",
+    "userNotBanned":"has not been banned from the trades"
+}

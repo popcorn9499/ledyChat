@@ -1,0 +1,7 @@
+{
+    "CommandType":"ledyDsStop",
+    "Command": "!ledyStop",
+    "CommandDetails": "",
+    "RolesAllowed": ["Owner","Mod"],
+    "HelpDetails": "Stops ledy bot"
+}
