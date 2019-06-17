@@ -305,7 +305,7 @@ class ledyBotChat:
 
 
     async def processMsg(self,username,message,roleList,server,channel,service,formatOpts="",formattingSettings=None,formatType=None):
-        print("ya... {0}".format(message))
+        #print("ya... {0}".format(message))
         formatOptions = {"%authorName%": username, "%channelFrom%": channel, "%serverFrom%": server, "%serviceFrom%": service,"%message%":"message","%roles%":roleList}
         formatOptions.update(formatOpts)
         message = Object.ObjectLayout.message(Author=username,Contents=message,Server=server,Channel=channel,Service=service,Roles=roleList)
