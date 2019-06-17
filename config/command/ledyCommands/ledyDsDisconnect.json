@@ -1,7 +1,0 @@
-{
-    "CommandType":"ledyDsDisconnect",
-    "Command": "!ledyDisconnect",
-    "CommandDetails": "",
-    "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "disconnects Ledybot from the 3ds"
-}

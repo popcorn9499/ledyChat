@@ -1,7 +1,0 @@
-{
-    "CommandType":"ledyDsConnect",
-    "Command": "!ledyConnect",
-    "CommandDetails": "",
-    "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "Connects Ledybot to the 3ds"
-}

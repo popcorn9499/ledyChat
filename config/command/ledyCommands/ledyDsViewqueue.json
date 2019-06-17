@@ -1,7 +1,0 @@
-{
-    "CommandType":"ledyDsViewqueue",
-    "Command": "!ledyViewqueue",
-    "CommandDetails": "",
-    "RolesAllowed": ["Owner","Mod"],
-    "HelpDetails": "views the trade queue \r\n    !ledyViewqueue just views the first page \r\n    !ledyViewqueue {some integer}"
-}
