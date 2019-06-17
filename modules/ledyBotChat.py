@@ -141,7 +141,7 @@ class ledyBotChat:
         try: #if the command isnt long enough complain to the user
             fc = message.Message.Contents.split(" ")[1]
         except IndexError:
-            result = command["HelpDetails"]
+            result = message.Message.Author + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
         fc = fc.replace("-","")
@@ -157,11 +157,11 @@ class ledyBotChat:
 
         self.fcList.append({"username": message.Message.User,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
-        print("Adding the fc")
+        self.l.logger.info("Adding the fc")
         try:
             await self.tcpObj.write("addFcTrade " + fc)
         except:
-            pass
+            self.l.logger.info("Ledybot down. proceeding as normal")
             # result = command["botDown"]
             # await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
 
@@ -195,18 +195,12 @@ class ledyBotChat:
                 fcData = x["fcData"]
                 onGoing = x
                 break
-        
-        
         details = response.split(" ")
-        
         if details[1] == ":Done": #determines if this is a final response from the ledybot connection or not
             finalResponse = True
             details.pop(1)
-
         fcResponse = details[1].split("&")
-
         fcData = fcData + fcResponse
-
         if onGoing != None:#keeps the ongoing message list clear
             self.onGoingCommandList.remove(onGoing)
 
@@ -221,7 +215,6 @@ class ledyBotChat:
             result = command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
-
         banned = False #inocent until proven guilty
         for banFC in fcData: #cycles list for banned fcs
             if banFC == checkFor:
@@ -230,7 +223,6 @@ class ledyBotChat:
             result = message.Message.Author + command["userBanned"]
         else:
             result = message.Message.Author + command["userNotBanned"]
-
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
 
