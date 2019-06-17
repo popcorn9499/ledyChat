@@ -64,7 +64,7 @@ class ledyBotChat:
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
 
     async def sendFCs(self):
-        await self.checkFCs()
+        #await self.checkFCs()
         for fc in self.fcList:
            await self.tcpObj.write("addFcTrade " + fc["fc"])
 
