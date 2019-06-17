@@ -161,19 +161,23 @@ class ledyBotChat:
         try:
             await self.tcpObj.write("addFcTrade " + fc)
         except:
-            result = command["botDown"]
-            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            pass
+            # result = command["botDown"]
+            # await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
 
-        await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
+        await self.processMsg(message=message.Message.Author + " FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
     async def viewFC(self,message,command):
         user = message.Message.User
         botRoles= {"":0}
         for fc in self.fcList:
             if fc["username"] == user:
-                response = "Your fc: " + fc["fc"]
+                response = message.Message.Author + " fc: " + fc["fc"]
                 await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
-  
+                return
+        await self.processMsg(message=message.Message.Author + command["noFC"],username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
+ 
+        
 
     async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
         await self.tcpObj.write("listBanFCList")
@@ -223,9 +227,9 @@ class ledyBotChat:
             if banFC == checkFor:
                 banned = True
         if banned:
-            result = command["userBanned"]
+            result = message.Message.Author + command["userBanned"]
         else:
-            result = command["userNotBanned"]
+            result = message.Message.Author + command["userNotBanned"]
 
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
