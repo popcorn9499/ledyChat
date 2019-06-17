@@ -25,21 +25,16 @@ class ledyBotChat:
 
         fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
         
-        #fileIO.checkFile("config-example{0}LedyChat{0}fcList.json".format(os.sep),"config{0}LedyChat{0}fcList.json".format(os.sep),"fcList.json",self.l)
-    
         try:
             self.fcList = fileIO.fileLoad(self.fcListFileName)
         except:
             self.fcList = [] 
-
-        #fileIO.fileLoad(self.fcListFileName)
 
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
         
 
         self.onGoingCommandList = []
-
         loop = asyncio.get_event_loop()
         loop.create_task(self.ledyCommands())#creates the add commands task
 
@@ -69,8 +64,16 @@ class ledyBotChat:
             fileIO.fileSave(self.ledyPipeNameFile,pipeNames)
 
     async def sendFCs(self):
+        #await self.checkFCs()
         for fc in self.fcList:
            await self.tcpObj.write("addFcTrade " + fc["fc"])
+
+    async def checkFCs(self): #checks for duplicate fcs
+        for fcCheck in self.fcList:
+            for fc in self.fcList:
+                if fc["fc"] == fcCheck["fc"]:
+                    self.fcList.remove(fc)
+        fileIO.fileSave(self.fcListFileName,self.fcList)
 
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
@@ -130,6 +133,7 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyDsViewqueue",commandHandler=self.viewqueueLedyBot)
         config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
         config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
+        config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
 
     async def addFC(self,message,command):
         fc = ""
@@ -137,18 +141,43 @@ class ledyBotChat:
         try: #if the command isnt long enough complain to the user
             fc = message.Message.Contents.split(" ")[1]
         except IndexError:
-            result = command["HelpDetails"]
+            result = message.Message.Author + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
         fc = fc.replace("-","")
         fc = fc.replace(" ", "")
+        if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
+            result = message.Message.Author + ": " + command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+
+        for fcL in self.fcList: #cycles the fcs to see if the fc exists already
+            if fcL["username"] == message.Message.User:
+                self.fcList.remove(fcL)
+
         self.fcList.append({"username": message.Message.User,"fc": fc})
         fileIO.fileSave(self.fcListFileName,self.fcList)
-        print("Adding the fc")
-        await self.tcpObj.write("addFcTrade " + fc)
-        await self.processMsg(message="Your FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
+        self.l.logger.info("Adding the fc")
+        try:
+            await self.tcpObj.write("addFcTrade " + fc)
+        except:
+            self.l.logger.info("Ledybot down. proceeding as normal")
+            # result = command["botDown"]
+            # await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
 
+        await self.processMsg(message=message.Message.Author + " FC was added!!",username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
+    async def viewFC(self,message,command):
+        user = message.Message.User
+        botRoles= {"":0}
+        for fc in self.fcList:
+            if fc["username"] == user:
+                response = message.Message.Author + " fc: " + fc["fc"]
+                await self.processMsg(message=response,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
+                return
+        await self.processMsg(message=message.Message.Author + command["noFC"],username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)       
+ 
+        
 
     async def searchBanFCsLedyBot(self,message,command): #sends the start command to start the bot
         await self.tcpObj.write("listBanFCList")
@@ -166,18 +195,12 @@ class ledyBotChat:
                 fcData = x["fcData"]
                 onGoing = x
                 break
-        
-        
         details = response.split(" ")
-        
         if details[1] == ":Done": #determines if this is a final response from the ledybot connection or not
             finalResponse = True
             details.pop(1)
-
         fcResponse = details[1].split("&")
-
         fcData = fcData + fcResponse
-
         if onGoing != None:#keeps the ongoing message list clear
             self.onGoingCommandList.remove(onGoing)
 
@@ -192,16 +215,14 @@ class ledyBotChat:
             result = command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
-
         banned = False #inocent until proven guilty
         for banFC in fcData: #cycles list for banned fcs
             if banFC == checkFor:
                 banned = True
         if banned:
-            result = command["userBanned"]
+            result = message.Message.Author + command["userBanned"]
         else:
-            result = command["userNotBanned"]
-
+            result = message.Message.Author + command["userNotBanned"]
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles) #returns the data to the user
 
 
@@ -284,7 +305,7 @@ class ledyBotChat:
 
 
     async def processMsg(self,username,message,roleList,server,channel,service,formatOpts="",formattingSettings=None,formatType=None):
-        print("ya... {0}".format(message))
+        #print("ya... {0}".format(message))
         formatOptions = {"%authorName%": username, "%channelFrom%": channel, "%serverFrom%": server, "%serviceFrom%": service,"%message%":"message","%roles%":roleList}
         formatOptions.update(formatOpts)
         message = Object.ObjectLayout.message(Author=username,Contents=message,Server=server,Channel=channel,Service=service,Roles=roleList)
