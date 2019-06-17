@@ -1,0 +1,7 @@
+{
+    "CommandType":"ledyDsStart",
+    "Command": "!ledyStart",
+    "CommandDetails": "",
+    "RolesAllowed": ["Owner","Mod"],
+    "HelpDetails": "Starts ledy bot"
+}
