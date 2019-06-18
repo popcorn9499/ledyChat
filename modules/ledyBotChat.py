@@ -158,12 +158,12 @@ class ledyBotChat:
             return
         try:
             await self.tcpObj.write("unbanFC " + fc)
-            result = message.Message.Author + ": " + command["Completed"]
+            result = fc + " " + command["Completed"]
         except:
             self.l.logger.info("Ledybot down..")
-            result = message.Message.Author + ": " + command["LedyDown"]
+            result = fc + " " + command["LedyDown"]
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
- 
+
 
 
     async def addFC(self,message,command):
