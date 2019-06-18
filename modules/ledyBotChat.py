@@ -141,6 +141,30 @@ class ledyBotChat:
         if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
             return
         return fc
+        
+
+    async def unbanFC(self,message,command):
+        fc = ""
+        botRoles= {"":0}
+        try: #if the command isnt long enough complain to the user
+            fc = message.Message.Contents.split(" ")[1]
+        except IndexError:
+            result = message.Message.Author + command["HelpDetails"]
+        fc = self.fcParser(self,fc)
+        if fc == None:
+            result = message.Message.Author + ": " + command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+        try:
+            await self.tcpObj.write("unbanFC " + fc)
+            result = message.Message.Author + ": " + command["Completed"]
+        except:
+            self.l.logger.info("Ledybot down..")
+            result = message.Message.Author + ": " + command["LedyDown"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+ 
+
+
     async def addFC(self,message,command):
         fc = ""
         botRoles= {"":0}
