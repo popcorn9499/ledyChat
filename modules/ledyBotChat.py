@@ -135,6 +135,12 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
         config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
 
+    async def fcParser(self,message):
+        fc = fc.replace("-","")
+        fc = fc.replace(" ", "")
+        if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
+            return
+        return fc
     async def addFC(self,message,command):
         fc = ""
         botRoles= {"":0}
@@ -144,9 +150,8 @@ class ledyBotChat:
             result = message.Message.Author + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
-        fc = fc.replace("-","")
-        fc = fc.replace(" ", "")
-        if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
+        fc = self.fcParser(self,fc)
+        if fc == None:
             result = message.Message.Author + ": " + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
