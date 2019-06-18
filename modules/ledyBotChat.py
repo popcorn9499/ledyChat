@@ -135,7 +135,7 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
         config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
 
-    async def fcParser(self,message):
+    async def fcParser(self,fc):
         fc = fc.replace("-","")
         fc = fc.replace(" ", "")
         if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
