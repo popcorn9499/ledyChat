@@ -134,6 +134,7 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
         config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
         config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
+        config.events.addCommandType(commandType="ledyUnbanFC",commandHandler=self.unbanFC)
 
     async def fcParser(self,fc):
         fc = fc.replace("-","")
