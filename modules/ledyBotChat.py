@@ -162,7 +162,7 @@ class ledyBotChat:
         except:
             self.l.logger.info("Ledybot down..")
             result = message.Message.Author + ": " + command["LedyDown"]
-            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+        await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
  
 
 
