@@ -136,7 +136,7 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
         config.events.addCommandType(commandType="ledyUnbanFC",commandHandler=self.unbanFC)
 
-    async def fcParser(self,fc):
+    async def fcParser(self,fc): #output none if the fc is incorrect
         fc = fc.replace("-","")
         fc = fc.replace(" ", "")
         if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
@@ -152,14 +152,14 @@ class ledyBotChat:
         except IndexError:
             result = message.Message.Author + command["HelpDetails"]
         fc = await self.fcParser(fc)
-        if fc == None:
+        if fc == None: #throws a error if the fc is incorrect
             result = message.Message.Author + ": " + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
-        try:
+        try: #trys to unban said fc
             await self.tcpObj.write("unbanFC " + fc)
             result = fc + " " + command["Completed"]
-        except:
+        except: #throws out errors due to ledybot being down
             self.l.logger.info("Ledybot down..")
             result = fc + " " + command["LedyDown"]
         await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
@@ -176,7 +176,7 @@ class ledyBotChat:
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
         fc = await self.fcParser(fc)
-        if fc == None:
+        if fc == None: #throws a error if the fc is incorrect
             result = message.Message.Author + ": " + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
