@@ -176,7 +176,7 @@ class ledyBotChat:
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
         fc = await self.fcParser(fc)
-        if fc == None:
+        if fc == None: #throws a error if the fc is incorrect
             result = message.Message.Author + ": " + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
