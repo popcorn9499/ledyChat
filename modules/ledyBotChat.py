@@ -150,7 +150,7 @@ class ledyBotChat:
             fc = message.Message.Contents.split(" ")[1]
         except IndexError:
             result = message.Message.Author + command["HelpDetails"]
-        fc = self.fcParser(self,fc)
+        fc = await self.fcParser(fc)
         if fc == None:
             result = message.Message.Author + ": " + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
