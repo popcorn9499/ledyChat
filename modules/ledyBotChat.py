@@ -134,6 +134,37 @@ class ledyBotChat:
         config.events.addCommandType(commandType="ledySearchBanFCList",commandHandler=self.searchBanFCsLedyBot)
         config.events.addCommandType(commandType="ledyAddFC",commandHandler=self.addFC)
         config.events.addCommandType(commandType="ledyViewFC",commandHandler=self.viewFC)
+        config.events.addCommandType(commandType="ledyUnbanFC",commandHandler=self.unbanFC)
+
+    async def fcParser(self,fc):
+        fc = fc.replace("-","")
+        fc = fc.replace(" ", "")
+        if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
+            return
+        return fc
+        
+
+    async def unbanFC(self,message,command):
+        fc = ""
+        botRoles= {"":0}
+        try: #if the command isnt long enough complain to the user
+            fc = message.Message.Contents.split(" ")[1]
+        except IndexError:
+            result = message.Message.Author + command["HelpDetails"]
+        fc = await self.fcParser(fc)
+        if fc == None:
+            result = message.Message.Author + ": " + command["HelpDetails"]
+            await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+            return
+        try:
+            await self.tcpObj.write("unbanFC " + fc)
+            result = fc + " " + command["Completed"]
+        except:
+            self.l.logger.info("Ledybot down..")
+            result = fc + " " + command["LedyDown"]
+        await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
+
+
 
     async def addFC(self,message,command):
         fc = ""
@@ -144,9 +175,8 @@ class ledyBotChat:
             result = message.Message.Author + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
-        fc = fc.replace("-","")
-        fc = fc.replace(" ", "")
-        if not fc.isdigit() or len(fc) != 12: #checks if the fc is digits and the correct length
+        fc = await self.fcParser(fc)
+        if fc == None:
             result = message.Message.Author + ": " + command["HelpDetails"]
             await self.processMsg(message=result,username="Bot",channel=message.Message.Channel,server=message.Message.Server,service=message.Message.Service,roleList=botRoles)
             return
