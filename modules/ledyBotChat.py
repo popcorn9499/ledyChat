@@ -16,6 +16,7 @@ class ledyBotChat:
         self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
         self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
         self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
+        self.msgFailedTradesChannelsFileName = "{0}{1}MsgFailedTradesChannel.json".format(self.ledyDir,os.sep)
         self.generalFileName="{0}{1}general.json".format(self.ledyDir,os.sep)
         self.fcListFileName ="{0}{1}fcList.json".format(self.ledyDir,os.sep)
         #checks for the files to exist
@@ -24,7 +25,8 @@ class ledyBotChat:
         fileIO.checkFile("config-example{0}LedyChat{0}MsgChannel.json".format(os.sep),"config{0}LedyChat{0}MsgChannel.json".format(os.sep),"MsgChannel.json",self.l)
 
         fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
-        
+        fileIO.checkFile("config-example{0}LedyChat{0}MsgFailedTradesChannel.json".format(os.sep),"config{0}LedyChat{0}MsgFailedTradesChannel.json".format(os.sep),"MsgFailedTradesChannel.json",self.l)
+
         try:
             self.fcList = fileIO.fileLoad(self.fcListFileName)
         except:
@@ -32,7 +34,7 @@ class ledyBotChat:
 
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
-        
+        self.msgFailedTradesChannels = fileIO.fileLoad(self.msgFailedTradesChannelsFileName)
 
         self.onGoingCommandList = []
         loop = asyncio.get_event_loop()
@@ -78,26 +80,53 @@ class ledyBotChat:
     async def ledyReader(self,commandOutput): #reads all messages that come in. hopefully it gets broadcasted to both pipes
         print("reader...")
         self.l.logger.info("[but] {0}".format(commandOutput))
+        
+        if commandOutput.split(" ")[0] == "msg:trade":
+            await self.tradeOutput(commandOutput)
+        elif commandOutput.split(" ")[0] == "msg:failedTrades":
+            await self.failedTrades(commandOutput)
+        else:
+            pass
+            #await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
+    
+    async def failedTrades(self,commandOutput):
+        for key,val in self.self.msgFailedTradesChannels.items():#chat output to wherever
+            botRoles= {"":0}
+            msg = commandOutput
+            x = msg.replace("msg:failedTrades", " ")[2:]
+            #x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
+            x = x.split("|")
+            trainer = x[0]
+            name = x[1]
+            country = x[2]
+            subReddit = x[3]
+            pokemon = x[4]
+            fc = x[5]
+            page = x[6]
+            index = x[7]
+            failReason = x[8]
+            formatOpts = {"%ledyTrainerName%":trainer,"%ledyNickname%":name,"%ledyCountry%":country,"%ledySubReddit%":subReddit,"%ledyPokemon%":pokemon,"%ledyFC%":fc,"%ledyPage%":page,"%ledyIndex%":index, "%failReason%": failReason}
+            await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts,formattingSettings=val["TradeFormatting"],formatType="Other")
+
+
+
+    async def tradeOutput(self,commandOutput):
         for key,val in self.msgChannels.items():#chat output to wherever
             botRoles= {"":0}
-            if commandOutput.split(" ")[0] == "msg:trade":
-                msg = commandOutput
-                x = msg.replace("msg:trade", " ")[2:]
-                #x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
-                x = x.split("|")
-                trainer = x[0]
-                name = x[1]
-                country = x[2]
-                subReddit = x[3]
-                pokemon = x[4]
-                fc = x[5]
-                page = x[6]
-                index = x[7]
-                formatOpts = {"%ledyTrainerName%":trainer,"%ledyNickname%":name,"%ledyCountry%":country,"%ledySubReddit%":subReddit,"%ledyPokemon%":pokemon,"%ledyFC%":fc,"%ledyPage%":page,"%ledyIndex%":index}
-                await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts,formattingSettings=val["TradeFormatting"],formatType="Other")
-            else:
-                pass
-                #await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
+            msg = commandOutput
+            x = msg.replace("msg:trade", " ")[2:]
+            #x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
+            x = x.split("|")
+            trainer = x[0]
+            name = x[1]
+            country = x[2]
+            subReddit = x[3]
+            pokemon = x[4]
+            fc = x[5]
+            page = x[6]
+            index = x[7]
+            formatOpts = {"%ledyTrainerName%":trainer,"%ledyNickname%":name,"%ledyCountry%":country,"%ledySubReddit%":subReddit,"%ledyPokemon%":pokemon,"%ledyFC%":fc,"%ledyPage%":page,"%ledyIndex%":index}
+            await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts,formattingSettings=val["TradeFormatting"],formatType="Other")
 
 
     async def reader(self,message):
