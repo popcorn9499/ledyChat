@@ -81,12 +81,30 @@ class ledyBotChat:
         
         if commandOutput.split(" ")[0] == "msg:trade":
             await self.tradeOutput(commandOutput)
+        elif commandOutput.split(" ")[0] == "msg:failedTrades":
+            await self.failedTrades(commandOutput)
         else:
             pass
             #await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
     
     async def failedTrades(self,commandOutput):
-        pass
+        for key,val in self.msgChannels.items():#chat output to wherever
+            botRoles= {"":0}
+            msg = commandOutput
+            x = msg.replace("msg:trade", " ")[2:]
+            #x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
+            x = x.split("|")
+            trainer = x[0]
+            name = x[1]
+            country = x[2]
+            subReddit = x[3]
+            pokemon = x[4]
+            fc = x[5]
+            page = x[6]
+            index = x[7]
+            formatOpts = {"%ledyTrainerName%":trainer,"%ledyNickname%":name,"%ledyCountry%":country,"%ledySubReddit%":subReddit,"%ledyPokemon%":pokemon,"%ledyFC%":fc,"%ledyPage%":page,"%ledyIndex%":index}
+            await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles,formatOpts=formatOpts,formattingSettings=val["TradeFormatting"],formatType="Other")
+
 
 
     async def tradeOutput(self,commandOutput):
