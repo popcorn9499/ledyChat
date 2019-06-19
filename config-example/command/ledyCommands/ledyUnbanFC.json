@@ -1,0 +1,9 @@
+{
+    "CommandType":"ledyUnbanFC",
+    "Command": "!fcUnban",
+    "CommandDetails": "",
+    "RolesAllowed": ["Owner","Mod"],
+    "HelpDetails": "Unbans user from ledybot trades \r\n    !fcUnban {fc}",
+    "Completed":" Has been unbanned",
+    "LedyDown":"Ledybot is down. unable to unban fc"
+}
