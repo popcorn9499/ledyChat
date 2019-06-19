@@ -91,7 +91,7 @@ class ledyBotChat:
         for key,val in self.msgChannels.items():#chat output to wherever
             botRoles= {"":0}
             msg = commandOutput
-            x = msg.replace("msg:trade", " ")[2:]
+            x = msg.replace("msg:failedTrades", " ")[2:]
             #x = x.replace(" ","__<->__")#some weird string that shouldnt be used we hope
             x = x.split("|")
             trainer = x[0]
