@@ -1,0 +1,9 @@
+{
+    "thing2":{
+        "Channel": "stream",
+        "Service": "Discord",
+        "Server": "The Arcade",
+        "Module": "Site",
+        "TradeFormatting": "[Trading] %ledyTrainerName% %ledyNickname% %ledyCountry% %ledySubReddit% %ledyPokemon% %ledyFC% %ledyPage% %ledyIndex% %failReason%"
+    }
+}
