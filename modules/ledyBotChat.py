@@ -16,6 +16,7 @@ class ledyBotChat:
         self.ledyDir = '.{0}config{0}LedyChat'.format(os.sep)
         self.ledyPipeNameFile = "{0}{1}pipeNames.json".format(self.ledyDir,os.sep)
         self.msgChannelsFileName = "{0}{1}MsgChannel.json".format(self.ledyDir,os.sep)
+        self.msgFailedTradesChannelsFileName = "{0}{1}MsgFailedTradesChannel.json".format(self.ledyDir,os.sep)
         self.generalFileName="{0}{1}general.json".format(self.ledyDir,os.sep)
         self.fcListFileName ="{0}{1}fcList.json".format(self.ledyDir,os.sep)
         #checks for the files to exist
@@ -24,7 +25,8 @@ class ledyBotChat:
         fileIO.checkFile("config-example{0}LedyChat{0}MsgChannel.json".format(os.sep),"config{0}LedyChat{0}MsgChannel.json".format(os.sep),"MsgChannel.json",self.l)
 
         fileIO.checkFile("config-example{0}LedyChat{0}general.json".format(os.sep),"config{0}LedyChat{0}general.json".format(os.sep),"general.json",self.l)
-        
+        fileIO.checkFile("config-example{0}LedyChat{0}MsgFailedTradesChannel.json".format(os.sep),"config{0}LedyChat{0}MsgFailedTradesChannel.json".format(os.sep),"MsgFailedTradesChannel.json",self.l)
+
         try:
             self.fcList = fileIO.fileLoad(self.fcListFileName)
         except:
@@ -32,7 +34,7 @@ class ledyBotChat:
 
         self.tradequeueEnable = fileIO.fileLoad(self.generalFileName)["Tradequeue Enable"]
         self.msgChannels = fileIO.fileLoad(self.msgChannelsFileName)
-        
+        self.msgFailedTradesChannels = fileIO.fileLoad(self.msgFailedTradesChannelsFileName)
 
         self.onGoingCommandList = []
         loop = asyncio.get_event_loop()
@@ -88,7 +90,7 @@ class ledyBotChat:
             #await self.processMsg(message=commandOutput,username="Bot",channel=val["Channel"],server=val["Server"],service=val["Service"],roleList=botRoles)       
     
     async def failedTrades(self,commandOutput):
-        for key,val in self.msgChannels.items():#chat output to wherever
+        for key,val in self.self.msgFailedTradesChannels.items():#chat output to wherever
             botRoles= {"":0}
             msg = commandOutput
             x = msg.replace("msg:failedTrades", " ")[2:]
